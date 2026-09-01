@@ -1,0 +1,27 @@
+{
+  "openapi": "3.1.0",
+  "info": { "title": "AgentBridge Store API", "version": "0.1.0", "description": "REST API for the standalone AgentBridge e-commerce store. This application intentionally does not implement WebMCP." },
+  "paths": {
+    "/api/auth/register": { "post": { "summary": "Create account" } },
+    "/api/auth/login": { "post": { "summary": "Start session" } },
+    "/api/auth/logout": { "post": { "summary": "End session" } },
+    "/api/auth/session": { "get": { "summary": "Current user" } },
+    "/api/products/search": { "get": { "summary": "Search products", "parameters": [{ "name": "q", "in": "query" }, { "name": "category", "in": "query" }, { "name": "minPrice", "in": "query" }, { "name": "maxPrice", "in": "query" }, { "name": "brand", "in": "query" }, { "name": "minRating", "in": "query" }, { "name": "page", "in": "query" }, { "name": "limit", "in": "query" }] } },
+    "/api/products/filter": { "get": { "summary": "Filter products" } },
+    "/api/products/{id}": { "get": { "summary": "Product details" } },
+    "/api/products/recommendations": { "get": { "summary": "Product recommendations" } },
+    "/api/cart": { "get": { "summary": "Get cart" }, "delete": { "summary": "Clear cart" } },
+    "/api/cart/items": { "post": { "summary": "Add cart item" } },
+    "/api/cart/items/{id}": { "patch": { "summary": "Update cart item" }, "delete": { "summary": "Remove cart item" } },
+    "/api/cart/coupon": { "post": { "summary": "Apply coupon" } },
+    "/api/wishlist": { "get": { "summary": "Get wishlist" } },
+    "/api/wishlist/items": { "post": { "summary": "Add wishlist item" } },
+    "/api/wishlist/items/{productId}": { "delete": { "summary": "Remove wishlist item" } },
+    "/api/addresses": { "get": { "summary": "List addresses" }, "post": { "summary": "Create address" } },
+    "/api/orders": { "get": { "summary": "Order history" } },
+    "/api/orders/{id}": { "get": { "summary": "Order detail" } },
+    "/api/orders/{id}/cancel": { "post": { "summary": "Cancel order" } },
+    "/api/shipping/estimate": { "get": { "summary": "Shipping estimate" } },
+    "/api/checkout": { "post": { "summary": "Mock-payment checkout" } }
+  }
+}

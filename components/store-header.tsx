@@ -1,0 +1,2 @@
+import Link from "next/link";
+export function StoreHeader() { return <header className="border-b bg-white"><nav className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-4"><Link href="/" className="text-xl font-bold tracking-tight">AgentBridge</Link><div className="flex items-center gap-4 text-sm"><Link href="/products">Products</Link><Link href="/search">Search</Link><Link href="/wishlist">Wishlist</Link><Link href="/cart">Cart</Link><Link href="/account">Account</Link></div></nav></header>; }

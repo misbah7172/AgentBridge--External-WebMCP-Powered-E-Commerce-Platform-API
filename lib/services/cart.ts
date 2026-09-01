@@ -1,0 +1,20 @@
+import { Prisma } from "@prisma/client";
+import { db } from "@/lib/db";
+
+const include = { coupon: true, items: { include: { product: { include: { images: { take: 1 } } }, variant: true } } };
+export const cartDto = (cart: any) => { const items = cart.items.map((item: any) => { const unitPrice = Number(item.variant?.price ?? item.product.price); return { id: item.id, quantity: item.quantity, unitPrice, lineTotal: unitPrice * item.quantity, product: { id: item.product.id, name: item.product.name, slug: item.product.slug, image: item.product.images[0]?.url ?? null, stock: item.variant?.stock ?? item.product.stock }, variant: item.variant ? { id: item.variant.id, sku: item.variant.sku, attributes: item.variant.attributes } : null }; }); const subtotal = items.reduce((total: number, item: any) => total + item.lineTotal, 0); return { id: cart.id, items, coupon: cart.coupon ? { code: cart.coupon.code, type: cart.coupon.type, value: Number(cart.coupon.value) } : null, subtotal }; };
+
+export async function getCart(userId: string) { const cart = await db.cart.upsert({ where: { userId }, update: {}, create: { userId }, include }); return cartDto(cart); }
+export async function addCartItem(userId: string, input: { productId: string; variantId?: string; quantity: number }) {
+  const product = await db.product.findUnique({ where: { id: input.productId } }); if (!product) throw new Error("PRODUCT_NOT_FOUND");
+  const variant = input.variantId ? await db.productVariant.findFirst({ where: { id: input.variantId, productId: input.productId } }) : null;
+  if (input.variantId && !variant) throw new Error("VARIANT_NOT_FOUND"); if ((variant?.stock ?? product.stock) < input.quantity) throw new Error("INSUFFICIENT_STOCK");
+  const cart = await db.cart.upsert({ where: { userId }, update: {}, create: { userId } });
+  const existing = await db.cartItem.findFirst({ where: { cartId: cart.id, productId: input.productId, variantId: input.variantId ?? null } });
+  if (existing) { const quantity = existing.quantity + input.quantity; if ((variant?.stock ?? product.stock) < quantity) throw new Error("INSUFFICIENT_STOCK"); await db.cartItem.update({ where: { id: existing.id }, data: { quantity } }); } else await db.cartItem.create({ data: { cartId: cart.id, ...input } });
+  return getCart(userId);
+}
+export async function updateCartItem(userId: string, itemId: string, quantity: number) { const cart = await db.cart.findUnique({ where: { userId } }); const item = cart ? await db.cartItem.findFirst({ where: { id: itemId, cartId: cart.id }, include: { product: true, variant: true } }) : null; if (!item) throw new Error("CART_ITEM_NOT_FOUND"); if ((item.variant?.stock ?? item.product.stock) < quantity) throw new Error("INSUFFICIENT_STOCK"); await db.cartItem.update({ where: { id: itemId }, data: { quantity } }); return getCart(userId); }
+export async function removeCartItem(userId: string, itemId: string) { const cart = await db.cart.findUnique({ where: { userId } }); const result = cart ? await db.cartItem.deleteMany({ where: { id: itemId, cartId: cart.id } }) : { count: 0 }; if (!result.count) throw new Error("CART_ITEM_NOT_FOUND"); return getCart(userId); }
+export async function clearCart(userId: string) { const cart = await db.cart.findUnique({ where: { userId } }); if (cart) await db.cartItem.deleteMany({ where: { cartId: cart.id } }); return getCart(userId); }
+export async function applyCoupon(userId: string, code: string) { const cart = await db.cart.upsert({ where: { userId }, update: {}, create: { userId } }); const coupon = await db.coupon.findUnique({ where: { code } }); if (!coupon || (coupon.expiresAt && coupon.expiresAt < new Date()) || (coupon.usageLimit !== null && coupon.usedCount >= coupon.usageLimit)) throw new Error("INVALID_COUPON"); const current = await getCart(userId); if (coupon.minimumPurchase && new Prisma.Decimal(current.subtotal).lt(coupon.minimumPurchase)) throw new Error("COUPON_MINIMUM_NOT_MET"); await db.cart.update({ where: { id: cart.id }, data: { couponId: coupon.id } }); return getCart(userId); }

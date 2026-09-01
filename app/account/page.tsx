@@ -1,0 +1,4 @@
+import Link from "next/link";
+import { currentUser } from "@/lib/auth/session";
+import { redirect } from "next/navigation";
+export default async function AccountPage() { const user = await currentUser(); if (!user) redirect("/login"); return <main className="mx-auto max-w-4xl px-6 py-12"><p className="text-sm text-slate-500">AgentBridge account</p><h1 className="mt-2 text-4xl font-bold">Hello, {user.name}</h1><div className="mt-10 grid gap-4 sm:grid-cols-3"><Link className="rounded border bg-white p-5" href="/account/orders">Orders</Link><Link className="rounded border bg-white p-5" href="/account/addresses">Addresses</Link><Link className="rounded border bg-white p-5" href="/wishlist">Wishlist</Link>{user.role === "ADMIN" && <Link className="rounded border bg-white p-5" href="/admin">Administration</Link>}</div></main>; }

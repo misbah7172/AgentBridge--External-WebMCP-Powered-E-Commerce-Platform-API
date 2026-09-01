@@ -1,0 +1,4 @@
+"use client";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+export function AddToCart({ productId, disabled }: { productId: string; disabled: boolean }) { const router = useRouter(); const [message, setMessage] = useState(""); async function add() { const response = await fetch("/api/cart/items", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ productId, quantity: 1 }) }); if (response.status === 401) return router.push("/login"); const result = await response.json(); setMessage(result.success ? "Added to your cart." : result.error.message); } return <div><button onClick={add} className="mt-8 rounded bg-slate-900 px-5 py-3 text-sm font-semibold text-white disabled:opacity-50" disabled={disabled}>{disabled ? "Out of stock" : "Add to cart"}</button>{message && <p className="mt-3 text-sm text-slate-600">{message}</p>}</div>; }
