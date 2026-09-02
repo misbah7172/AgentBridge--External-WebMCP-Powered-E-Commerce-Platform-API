@@ -13,7 +13,8 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:seed": "node --env-file=.env --import tsx prisma/seed.ts",
-    "db:seed-products": "node --env-file=.env --import tsx prisma/seed-products.ts"
+    "db:seed-products": "node --env-file=.env --import tsx prisma/seed-products.ts",
+    "db:seed-users": "node --env-file=.env --import tsx prisma/seed-users.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.16.2",
