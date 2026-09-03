@@ -9,7 +9,16 @@ AgentBridge is a standalone Next.js e-commerce application with a PostgreSQL/Pri
 3. Run `npm run db:migrate`, then `npm run db:seed`.
 4. Run `npm run dev`.
 
-Development users after seeding: `customer@example.com` and `admin@example.com`, both with password `ChangeMe123!`. Change these outside local development.
+## Demo credentials
+
+After running `npm run db:seed`, use the following local/demo accounts:
+
+| Role | Email | Password |
+| --- | --- | --- |
+| Customer | `customer@example.com` | `ChangeMe123!` |
+| Administrator | `admin@example.com` | `ChangeMe123!` |
+
+These credentials are seed data only. Replace them in every non-demo environment and do not treat them as credentials for a separately provisioned deployment.
 
 ## Architecture
 
