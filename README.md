@@ -17,7 +17,7 @@ Next.js UI → route handlers → services → Prisma repositories → PostgreSQ
 
 ## Verification
 
-Run `npm run build`, `npm test`, and `npm run test:e2e` (after configuring a running database and application). API documentation is at `/docs/api`; the machine-readable specification is `/openapi.json`.
+Run `npm run build` and `npm test`. The WebMCP browser journey is intentionally isolated: configure `E2E_BASE_URL`, `E2E_EMAIL`, and `E2E_PASSWORD` for a disposable adapter deployment before running `npm run test:e2e`. API documentation is at `/docs/api`; the machine-readable specification is `/openapi.json`.
 
 ## Security
 
